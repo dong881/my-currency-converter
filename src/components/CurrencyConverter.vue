@@ -110,7 +110,7 @@ export default {
   },
   methods: {
     async convertCurrency() {
-      if (!this.amount || this.amount <= 0) {
+      if (this.amount === null || this.amount === undefined || this.amount <= 0) {
         this.error = '請輸入有效的金額'
         return
       }
@@ -134,7 +134,10 @@ export default {
         if (data.rates && data.rates[this.toCurrency]) {
           this.exchangeRate = data.rates[this.toCurrency]
           this.result = this.amount * this.exchangeRate
-          this.lastUpdate = new Date(data.time_last_updated * 1000).toLocaleString('zh-TW')
+          // ExchangeRate-API uses time_last_updated (seconds since epoch)
+          if (data.time_last_updated) {
+            this.lastUpdate = new Date(data.time_last_updated * 1000).toLocaleString('zh-TW')
+          }
         } else {
           throw new Error('無法找到指定的貨幣匯率')
         }
